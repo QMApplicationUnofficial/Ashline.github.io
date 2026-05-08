@@ -195,15 +195,16 @@ export class WeaponViewModel {
     }
     // Charging handle
     parts.bolt = addBox(g, [0.1, 0.04, 0.22], [0.02, 0.27, 0.06], this.materials.steel);
-    // Hands
+    // Hands wrap the grip and handguard
     this.addHands(g, parts, {
-      right: [0.1, -0.32, -0.08],
-      rightAngle: [-0.5, 0.04, 0.16],
-      left: [-0.04, -0.06, -1.1],
-      leftAngle: [-0.6, -0.04, -0.1]
+      right: [0.13, -0.22, -0.15],
+      rightAngle: [-0.55, -0.05, 0.55],
+      left: [-0.1, 0.08, -0.92],
+      leftAngle: [-0.95, 0.25, 0.7]
     });
     parts.muzzle.position.set(0.02, 0.06, -2.16);
     this.addMuzzleFlash(g, parts, [0.02, 0.06, -2.18], 0.36);
+    parts.aimPose = { position: new THREE.Vector3(-0.01, -0.27, -0.5), tilt: 0 };
   }
 
   buildMote(parts) {
@@ -240,13 +241,14 @@ export class WeaponViewModel {
     // Charging handle
     parts.bolt = addBox(g, [0.08, 0.04, 0.18], [0.18, 0.16, -0.4], this.materials.steel);
     this.addHands(g, parts, {
-      right: [0.12, -0.32, -0.16],
-      rightAngle: [-0.55, 0.04, 0.18],
-      left: [-0.06, -0.05, -0.94],
-      leftAngle: [-0.6, -0.06, -0.14]
+      right: [0.14, -0.18, -0.2],
+      rightAngle: [-0.55, -0.05, 0.55],
+      left: [-0.1, 0.08, -0.86],
+      leftAngle: [-0.95, 0.25, 0.7]
     });
     parts.muzzle.position.set(0.02, 0.06, -1.66);
     this.addMuzzleFlash(g, parts, [0.02, 0.06, -1.68], 0.3);
+    parts.aimPose = { position: new THREE.Vector3(-0.01, -0.23, -0.45), tilt: 0 };
   }
 
   buildTalon(parts) {
@@ -280,14 +282,15 @@ export class WeaponViewModel {
     // Slide serrations + bolt
     parts.bolt = addBox(g, [0.16, 0.04, 0.04], [0.02, 0.28, -0.08], this.materials.gunDark);
     this.addHands(g, parts, {
-      right: [0.05, -0.28, -0.16],
-      rightAngle: [-0.55, 0.06, 0.16],
-      left: [-0.16, -0.18, -0.32],
-      leftAngle: [-0.7, -0.2, -0.18],
+      right: [0.13, -0.18, -0.2],
+      rightAngle: [-0.55, -0.05, 0.55],
+      left: [-0.05, -0.05, -0.32],
+      leftAngle: [-0.7, 0.4, 0.5],
       compact: true
     });
     parts.muzzle.position.set(0.02, 0.16, -1.12);
     this.addMuzzleFlash(g, parts, [0.02, 0.16, -1.14], 0.24);
+    parts.aimPose = { position: new THREE.Vector3(-0.01, -0.32, -0.5), tilt: 0 };
   }
 
   addHands(parent, parts, config) {
@@ -304,18 +307,26 @@ export class WeaponViewModel {
   }
 
   addArm(group, length, isRight) {
-    addCylinder(group, 0.085, length, [0, -0.1, 0.32], this.materials.sleeve, [1.18, 0, 0], 12);
-    addCylinder(group, 0.075, 0.34, [0, 0.0, -0.16], this.materials.glove, [1.22, 0, 0], 12);
-    // Palm
-    addBox(group, [0.16, 0.07, 0.18], [0, -0.02, -0.3], this.materials.glove);
-    // Fingers wrapping (curled)
-    for (let i = 0; i < 4; i += 1) {
-      const x = -0.06 + i * 0.04;
-      addBox(group, [0.03, 0.05, 0.1], [x, -0.06, -0.4], this.materials.glove, [0.6, 0, 0]);
-      addBox(group, [0.03, 0.05, 0.08], [x, -0.1, -0.36], this.materials.glove, [1.2, 0, 0]);
+    const side = isRight ? 1 : -1;
+    // Forearm — short stub so the hand reads as gripping (no long arm phasing through gun)
+    addCylinder(group, 0.075, 0.32, [-0.04 * side, 0.06, 0.22], this.materials.sleeve, [1.25, 0.15 * side, 0], 12);
+    // Wrist
+    addCylinder(group, 0.07, 0.16, [-0.02 * side, 0.0, 0.04], this.materials.glove, [1.25, 0.1 * side, 0], 12);
+    // Palm — broad and tall, faces forward toward the grip
+    addBox(group, [0.13, 0.18, 0.1], [0, -0.02, -0.04], this.materials.glove);
+    // Knuckle ridge
+    addBox(group, [0.13, 0.05, 0.06], [0, -0.1, -0.08], this.materials.glove);
+    // Curled fingers — each finger is two segments wrapping around the grip front
+    const fingerOffsets = [-0.045, -0.015, 0.015, 0.045];
+    for (const fx of fingerOffsets) {
+      // Proximal segment angles forward
+      addBox(group, [0.024, 0.05, 0.08], [fx, -0.13, -0.07], this.materials.glove, [-0.45, 0, 0]);
+      // Distal segment curls back toward palm
+      addBox(group, [0.024, 0.045, 0.07], [fx, -0.17, -0.13], this.materials.glove, [-1.1, 0, 0]);
     }
-    // Thumb wraps over
-    addBox(group, [0.04, 0.05, 0.1], [isRight ? 0.08 : -0.08, 0.0, -0.36], this.materials.glove, [0.4, isRight ? -0.3 : 0.3, 0]);
+    // Thumb — wraps the inside (toward the gun centerline)
+    addBox(group, [0.04, 0.05, 0.1], [-0.07 * side, -0.04, -0.08], this.materials.glove, [-0.6, side * -0.5, side * 0.3]);
+    addBox(group, [0.035, 0.04, 0.07], [-0.085 * side, -0.08, -0.13], this.materials.glove, [-1.0, side * -0.5, side * 0.3]);
   }
 
   addMuzzleFlash(parent, parts, position, scale) {
@@ -362,44 +373,59 @@ export class WeaponViewModel {
     if (weapon) this.setWeapon(weapon.id);
 
     const rawSpeed = Math.hypot(player.velocity.x, player.velocity.z);
-    // Smooth speed to prevent per-frame jitter
     this.smoothSpeed += (rawSpeed - this.smoothSpeed) * Math.min(1, dt * 8);
 
-    // Sprint blend (gun lowered/holstered while running)
     const sprintTarget = player.sprinting ? 1 : 0;
     this.sprintBlend += (sprintTarget - this.sprintBlend) * Math.min(1, dt * 7);
+    const slideTarget = player.sliding ? 1 : 0;
+    if (this.slideBlend === undefined) this.slideBlend = 0;
+    this.slideBlend += (slideTarget - this.slideBlend) * Math.min(1, dt * 9);
+    const aimBlend = player.aimBlend ?? 0;
 
-    // Bob uses fixed frequency, smoothed amplitude — no jitter
     this.bobTime += dt * 8.4;
     this.shootKick = Math.max(0, this.shootKick - dt * 12);
     this.switchTime = Math.max(0, this.switchTime - dt * 5);
     this.reloadTime = Math.max(0, this.reloadTime - dt);
     this.flashTime = Math.max(0, this.flashTime - dt);
 
-    const bobAmount = clamp(this.smoothSpeed / 6, 0, 1) * (1 - this.sprintBlend);
+    const bobAmount = clamp(this.smoothSpeed / 6, 0, 1) * (1 - this.sprintBlend) * (1 - aimBlend * 0.85);
     const bobX = Math.sin(this.bobTime) * 0.014 * bobAmount;
     const bobY = Math.abs(Math.cos(this.bobTime)) * 0.016 * bobAmount;
-    const recoil = this.shootKick;
+    const recoil = this.shootKick * (1 - aimBlend * 0.5);
     const reloadT = this.reloadDuration > 0 ? 1 - this.reloadTime / this.reloadDuration : 1;
     const reloadWave = this.reloadTime > 0 ? Math.sin(clamp(reloadT, 0, 1) * Math.PI) : 0;
     const switchDrop = this.switchTime * 0.2;
 
-    // Sprint pose: drop and tilt the gun out of the way
+    // Sprint pose
     const sprintDropY = this.sprintBlend * 0.42;
     const sprintShiftX = this.sprintBlend * 0.12;
     const sprintShiftZ = this.sprintBlend * 0.18;
     const sprintTiltZ = this.sprintBlend * 0.6;
     const sprintTiltX = this.sprintBlend * 0.45;
 
+    // Slide pose: drop further, point forward
+    const slideDropY = this.slideBlend * 0.3;
+    const slideTiltZ = this.slideBlend * 0.25;
+
+    // Aim pose: blend the resting offset toward the per-weapon aimPose
+    const aimPose = this.activeModel?.aimPose;
+    const aimX = aimPose ? (aimPose.position.x - this.restPosition.x) * aimBlend : 0;
+    const aimY = aimPose ? (aimPose.position.y - this.restPosition.y) * aimBlend : 0;
+    const aimZ = aimPose ? (aimPose.position.z - this.restPosition.z) * aimBlend : 0;
+    // When aiming, kill the rest rotation so iron sights line up with crosshair
+    const aimRotX = -this.restRotation.x * aimBlend;
+    const aimRotY = -this.restRotation.y * aimBlend;
+    const aimRotZ = -this.restRotation.z * aimBlend;
+
     this.root.position.set(
-      this.restPosition.x + bobX + sprintShiftX,
-      this.restPosition.y - reloadWave * 0.18 - switchDrop + bobY - sprintDropY,
-      this.restPosition.z + recoil * 0.12 + reloadWave * 0.08 + sprintShiftZ
+      this.restPosition.x + bobX + sprintShiftX + aimX,
+      this.restPosition.y - reloadWave * 0.18 - switchDrop + bobY - sprintDropY - slideDropY + aimY,
+      this.restPosition.z + recoil * 0.12 + reloadWave * 0.08 + sprintShiftZ + aimZ
     );
     this.root.rotation.set(
-      this.restRotation.x - recoil * 0.12 - reloadWave * 0.2 + sprintTiltX,
-      this.restRotation.y + recoil * 0.06,
-      this.restRotation.z + bobX * 0.7 + reloadWave * 0.5 + sprintTiltZ
+      this.restRotation.x - recoil * 0.12 - reloadWave * 0.2 + sprintTiltX + aimRotX,
+      this.restRotation.y + recoil * 0.06 + aimRotY,
+      this.restRotation.z + bobX * 0.7 + reloadWave * 0.5 + sprintTiltZ + slideTiltZ + aimRotZ
     );
 
     if (this.activeModel) {

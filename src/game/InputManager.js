@@ -23,6 +23,7 @@ export class InputManager {
     document.addEventListener('mousedown', this.handleMouseDown);
     document.addEventListener('mouseup', this.handleMouseUp);
     document.addEventListener('wheel', this.handleWheel, { passive: true });
+    canvas.addEventListener('contextmenu', (event) => event.preventDefault());
     document.addEventListener('pointerlockchange', this.handlePointerLock);
   }
 

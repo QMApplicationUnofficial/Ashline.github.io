@@ -113,8 +113,9 @@ export class WeaponSystem {
       this.select((this.activeIndex + Math.sign(wheel) + this.weapons.length) % this.weapons.length);
     }
 
-    if (enabled && this.input.consume('KeyR')) this.reload();
-    if (enabled && this.input.mouseDown(0)) this.tryShoot(bots);
+    const canAct = enabled && !this.player.sliding && !this.player.sprinting;
+    if (canAct && this.input.consume('KeyR')) this.reload();
+    if (canAct && this.input.mouseDown(0)) this.tryShoot(bots);
 
     if (this.flashTime > 0) {
       this.flashTime -= dt;
@@ -143,7 +144,9 @@ export class WeaponSystem {
 
     const origin = this.camera.position.clone();
     const direction = this.camera.getWorldDirection(new THREE.Vector3());
-    this.applySpread(direction, weapon.spread + (this.player.input.isDown('ShiftLeft') ? 0.006 : 0));
+    const movePenalty = Math.min(0.012, Math.hypot(this.player.velocity.x, this.player.velocity.z) * 0.0018);
+    const aimMul = this.player.aiming ? 0.25 : 1;
+    this.applySpread(direction, (weapon.spread + movePenalty) * aimMul);
 
     const target = this.castShot(origin, direction, weapon.range, bots);
     const muzzle = this.viewModel.getMuzzleWorldPosition();

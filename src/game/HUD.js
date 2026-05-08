@@ -62,11 +62,13 @@ export class HUD {
               <div class="key-list">
                 <div><span>WASD</span> Move</div>
                 <div><span>Mouse</span> Look</div>
-                <div><span>Click</span> Shoot</div>
+                <div><span>LMB</span> Shoot</div>
+                <div><span>RMB</span> Aim</div>
                 <div><span>R</span> Reload</div>
                 <div><span>E</span> Plant</div>
                 <div><span>B</span> Buy</div>
                 <div><span>Shift</span> Sprint</div>
+                <div><span>Shift+Ctrl</span> Slide</div>
                 <div><span>Esc</span> Pause</div>
               </div>
               <div class="button-row">
