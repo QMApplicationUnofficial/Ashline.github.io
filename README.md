@@ -30,12 +30,12 @@ The Vite base path is set to:
 base: '/Ashline.github.io/'
 ```
 
-For GitHub Pages, enable Pages in the repository settings and select **Deploy from a branch** as the source. Use:
+For the current GitHub Pages setting, select **Deploy from a branch** as the source. Use:
 
-- Branch: `gh-pages`
+- Branch: `main`
 - Folder: `/ (root)`
 
-The workflow in `.github/workflows/deploy.yml` builds `dist/` and publishes the static output to the `gh-pages` branch.
+The root `index.html` is intentionally able to run directly from GitHub Pages. The workflow in `.github/workflows/deploy.yml` also verifies the Vite build and publishes `dist/` to the `gh-pages` branch as a backup static build.
 
 Expected project Pages URL:
 
