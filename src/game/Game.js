@@ -142,10 +142,8 @@ export class Game {
       const weaponsEnabled = this.round.roundState !== 'ended';
       this.weapons.update(dt, this.bots, weaponsEnabled);
       this.round.update(dt, this.bots);
-      if (this.round.roundState !== 'ended') {
-        for (const bot of this.bots) {
-          bot.update(dt, this.player, this.round);
-        }
+      for (const bot of this.bots) {
+        bot.update(dt, this.player, this.round);
       }
     } else {
       this.weapons.update(dt, this.bots, false);

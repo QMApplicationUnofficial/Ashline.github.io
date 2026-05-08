@@ -72,7 +72,7 @@ export class Player {
     const speed = crouching ? 3.0 : sprinting ? 7.0 : 4.65;
     let move = new THREE.Vector3();
     if (forward || strafe) {
-      move = rotateVector2(strafe, forward, this.yaw).normalize().multiplyScalar(speed);
+      move = rotateVector2(strafe, -forward, this.yaw).normalize().multiplyScalar(speed);
     }
 
     this.velocity.x = move.x;

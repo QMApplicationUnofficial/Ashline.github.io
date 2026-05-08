@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { WeaponViewModel } from './ViewModel.js';
 
 export const WEAPONS = [
   {
@@ -69,6 +70,7 @@ export class WeaponSystem {
       reload: 0
     }));
     this.activeIndex = 0;
+    this.viewModel = new WeaponViewModel(camera);
     this.flashLight = new THREE.PointLight(0xffcc72, 0, 7);
     this.scene.add(this.flashLight);
     this.flashTime = 0;
@@ -90,6 +92,7 @@ export class WeaponSystem {
   select(index) {
     if (index < 0 || index >= this.weapons.length) return;
     this.activeIndex = index;
+    this.viewModel.setWeapon(this.active.id);
   }
 
   update(dt, bots, enabled = true) {
@@ -116,10 +119,11 @@ export class WeaponSystem {
     if (this.flashTime > 0) {
       this.flashTime -= dt;
       this.flashLight.intensity = 22 * Math.max(0, this.flashTime / 0.04);
-      this.flashLight.position.copy(this.player.getMuzzlePosition());
+      this.flashLight.position.copy(this.viewModel.getMuzzleWorldPosition());
     } else {
       this.flashLight.intensity = 0;
     }
+    this.viewModel.update(dt, this.active, this.player);
   }
 
   tryShoot(bots) {
@@ -133,6 +137,7 @@ export class WeaponSystem {
     weapon.ammo -= 1;
     weapon.cooldown = weapon.fireRate;
     this.flashTime = 0.04;
+    this.viewModel.playShoot();
     this.player.addRecoil(weapon.recoil, weapon.kind === 'pistol' ? 0.62 : 0.45);
     this.audio.shoot(weapon.kind);
 
@@ -141,7 +146,7 @@ export class WeaponSystem {
     this.applySpread(direction, weapon.spread + (this.player.input.isDown('ShiftLeft') ? 0.006 : 0));
 
     const target = this.castShot(origin, direction, weapon.range, bots);
-    const muzzle = this.player.getMuzzlePosition();
+    const muzzle = this.viewModel.getMuzzleWorldPosition();
     this.particles.spawnTracer(muzzle, target.point);
 
     if (target.bot) {
@@ -196,6 +201,7 @@ export class WeaponSystem {
     const weapon = this.active;
     if (weapon.reload > 0 || weapon.ammo === weapon.magSize || weapon.reserveAmmo <= 0) return;
     weapon.reload = weapon.reloadTime;
+    this.viewModel.playReload(weapon.reloadTime);
     this.audio.reload();
   }
 
