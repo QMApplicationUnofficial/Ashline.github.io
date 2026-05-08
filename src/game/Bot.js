@@ -378,24 +378,51 @@ export class Bot {
     this.parts.weaponGroup.rotation.x = -0.4 - fall * 0.8;
   }
 
-  canSee(target) {
-    const origin = this.position.clone().add(new THREE.Vector3(0, 1.45, 0));
+  hasLineOfSight(origin, target, maxDistance = 60) {
     const direction = target.clone().sub(origin);
     const distance = direction.length();
-    if (distance > 38) return false;
+    if (distance > maxDistance) return false;
     direction.normalize();
     this.raycaster.set(origin, direction);
-    this.raycaster.far = distance - 0.8;
+    this.raycaster.far = Math.max(0.05, distance - 0.25);
     const blocked = this.raycaster.intersectObjects(this.map.worldMeshes, false);
     return blocked.length === 0;
+  }
+
+  canSee(target) {
+    // Bot needs a clear line from its eye to the player's head OR torso.
+    const eye = this.position.clone().add(new THREE.Vector3(0, 1.45 - this.crouchAmount * 0.28, 0));
+    const head = target.clone();
+    const torso = target.clone().add(new THREE.Vector3(0, -0.5, 0));
+    if (this.hasLineOfSight(eye, head, 38)) return true;
+    if (this.hasLineOfSight(eye, torso, 38)) return true;
+    return false;
   }
 
   shootAt(player) {
     this.shootCooldown = 0.34 + Math.random() * 0.42;
     this.weaponKick = 1;
     const origin = this.position.clone().add(new THREE.Vector3(0.22, 1.18 - this.crouchAmount * 0.28, 0));
-    const target = player.camera.position.clone();
-    const direction = target.clone().sub(origin).normalize();
+
+    // Aim at the player's chest, not their head — easier to verify LOS through cover.
+    const aimPoint = player.camera.position.clone().add(new THREE.Vector3(0, -0.45, 0));
+
+    // The bot can only land a shot if there is a clear line from its actual muzzle to the aim point.
+    const muzzleClear = this.hasLineOfSight(origin, aimPoint, 60);
+    if (!muzzleClear) {
+      // Fire a visible tracer that stops at the obstruction so the bot looks like it's still shooting,
+      // but never deal damage through walls.
+      const dir = aimPoint.clone().sub(origin).normalize();
+      this.raycaster.set(origin, dir);
+      this.raycaster.far = 60;
+      const hit = this.raycaster.intersectObjects(this.map.worldMeshes, false)[0];
+      const stopAt = hit ? hit.point : origin.clone().addScaledVector(dir, 60);
+      this.particles.spawnTracer(origin, stopAt);
+      this.audio.shoot('smg');
+      return;
+    }
+
+    const direction = aimPoint.clone().sub(origin).normalize();
     const miss = player.position.distanceTo(this.position) * 0.0035 + Math.random() * 0.025;
     direction.x += (Math.random() - 0.5) * miss;
     direction.y += (Math.random() - 0.5) * miss;
@@ -406,9 +433,8 @@ export class Bot {
     this.particles.spawnTracer(origin, endpoint);
     this.audio.shoot('smg');
 
-    const aimError = target.distanceTo(endpoint);
-    const closeEnough = aimError < 7.2 || Math.random() > 0.68;
-    if (this.canSee(player.camera.position) && closeEnough) {
+    const aimError = aimPoint.distanceTo(endpoint);
+    if (aimError < 6.0) {
       player.damage(8 + Math.random() * 7, this.position);
     }
   }

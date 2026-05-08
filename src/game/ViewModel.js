@@ -64,11 +64,11 @@ export class WeaponViewModel {
     this.camera.add(this.root);
 
     this.materials = {
-      gun: makeMaterial('#2a2f2c', 0.55, 0.42),
-      gunDark: makeMaterial('#121613', 0.52, 0.55),
-      polymer: makeMaterial('#1b1f1d', 0.92, 0.02),
-      wornMetal: makeMaterial('#5b6058', 0.42, 0.7),
-      steel: makeMaterial('#7d827a', 0.32, 0.85),
+      gun: makeMaterial('#2a2a2c', 0.55, 0.42),
+      gunDark: makeMaterial('#121214', 0.52, 0.55),
+      polymer: makeMaterial('#1b1b1d', 0.92, 0.02),
+      wornMetal: makeMaterial('#5d5d60', 0.42, 0.7),
+      steel: makeMaterial('#7c7d80', 0.32, 0.85),
       accent: makeMaterial('#a07a35', 0.7, 0.2),
       grip: makeMaterial('#15191a', 0.95, 0.04),
       sleeve: makeMaterial('#525a47', 0.82, 0.02),
@@ -147,12 +147,13 @@ export class WeaponViewModel {
     for (let i = 0; i < 9; i += 1) {
       addBox(g, [0.16, 0.025, 0.04], [0.02, 0.28, -0.85 + i * 0.11], this.materials.gunDark);
     }
-    // Rear sight block
-    addBox(g, [0.12, 0.1, 0.08], [0.02, 0.32, -0.04], this.materials.steel);
-    addBox(g, [0.04, 0.06, 0.02], [0.02, 0.39, -0.04], this.materials.steel);
-    // Front sight post
-    addBox(g, [0.08, 0.16, 0.06], [0.02, 0.32, -1.32], this.materials.steel);
-    addCylinder(g, 0.012, 0.16, [0.02, 0.34, -1.32], this.materials.gunDark, [0, 0, 0], 8);
+    // Rear sight: low aperture with a thin upright on either side (no fat block)
+    addBox(g, [0.12, 0.04, 0.04], [0.02, 0.28, -0.06], this.materials.gunDark);
+    addBox(g, [0.025, 0.06, 0.04], [-0.04, 0.31, -0.06], this.materials.gunDark);
+    addBox(g, [0.025, 0.06, 0.04], [0.08, 0.31, -0.06], this.materials.gunDark);
+    // Front sight: thin steel post in a low protective hood
+    addBox(g, [0.07, 0.04, 0.05], [0.02, 0.28, -1.32], this.materials.gunDark);
+    addBox(g, [0.018, 0.09, 0.025], [0.02, 0.32, -1.32], this.materials.steel);
     // Pistol grip (angled)
     addBox(g, [0.16, 0.34, 0.18], [0.04, -0.28, -0.18], this.materials.grip, [-0.32, 0, 0]);
     addBox(g, [0.17, 0.06, 0.18], [0.04, -0.46, -0.12], this.materials.grip, [-0.32, 0, 0]);
