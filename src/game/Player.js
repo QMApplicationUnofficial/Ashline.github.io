@@ -26,6 +26,8 @@ export class Player {
     this.shake = 0;
     this.footstepTimer = 0;
     this.damageFlash = 0;
+    this.sprinting = false;
+    this.smoothSpeed = 0;
     this.lastDamageFrom = new THREE.Vector3();
     this.camera.position.copy(this.position).add(new THREE.Vector3(0, this.height, 0));
   }
@@ -66,6 +68,7 @@ export class Player {
     const strafe = Number(this.input.isDown('KeyD')) - Number(this.input.isDown('KeyA'));
     const crouching = this.input.isDown('ControlLeft') || this.input.isDown('ControlRight') || this.input.isDown('KeyC');
     const sprinting = this.input.isDown('ShiftLeft') && forward > 0 && !crouching;
+    this.sprinting = sprinting;
     const targetHeight = crouching ? this.crouchHeight : this.standHeight;
     this.height += (targetHeight - this.height) * Math.min(1, dt * 12);
 
