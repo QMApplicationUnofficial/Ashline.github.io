@@ -46,6 +46,51 @@ export const WEAPONS = [
     range: 76,
     price: 200,
     note: 'Precise sidearm with punchy single shots.'
+  },
+  {
+    id: 'kestrel',
+    name: 'Kestrel DMR',
+    kind: 'rifle',
+    damage: 46,
+    fireRate: 0.31,
+    spread: 0.006,
+    recoil: 0.034,
+    magSize: 10,
+    reserve: 50,
+    reloadTime: 1.9,
+    range: 120,
+    price: 950,
+    note: 'Long sightline rifle with a slower, heavier rhythm.'
+  },
+  {
+    id: 'vanta',
+    name: 'Vanta-12',
+    kind: 'shotgun',
+    damage: 64,
+    fireRate: 0.72,
+    spread: 0.052,
+    recoil: 0.045,
+    magSize: 6,
+    reserve: 30,
+    reloadTime: 2.1,
+    range: 38,
+    price: 650,
+    note: 'Close-range breacher with a thick spread cone.'
+  },
+  {
+    id: 'drift',
+    name: 'Drift LMG',
+    kind: 'rifle',
+    damage: 23,
+    fireRate: 0.078,
+    spread: 0.018,
+    recoil: 0.015,
+    magSize: 45,
+    reserve: 135,
+    reloadTime: 2.6,
+    range: 82,
+    price: 1100,
+    note: 'Heavy suppressive weapon with a deep magazine.'
   }
 ];
 
@@ -104,9 +149,9 @@ export class WeaponSystem {
       }
     }
 
-    if (this.input.consume('Digit1')) this.select(0);
-    if (this.input.consume('Digit2')) this.select(1);
-    if (this.input.consume('Digit3')) this.select(2);
+    for (let i = 0; i < this.weapons.length; i += 1) {
+      if (this.input.consume(`Digit${i + 1}`)) this.select(i);
+    }
 
     const wheel = this.input.consumeScroll();
     if (wheel !== 0) {

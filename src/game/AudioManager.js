@@ -93,7 +93,8 @@ export class AudioManager {
     const profiles = {
       rifle: { frequency: 92, slide: -40, noise: 0.17, lowpass: 2400 },
       smg: { frequency: 128, slide: -52, noise: 0.11, lowpass: 2100 },
-      pistol: { frequency: 155, slide: -65, noise: 0.13, lowpass: 2600 }
+      pistol: { frequency: 155, slide: -65, noise: 0.13, lowpass: 2600 },
+      shotgun: { frequency: 72, slide: -38, noise: 0.24, lowpass: 1800 }
     };
     const p = profiles[kind] ?? profiles.rifle;
     this.blip({ frequency: p.frequency, duration: 0.08, type: 'sawtooth', gain: 0.12, slide: p.slide });

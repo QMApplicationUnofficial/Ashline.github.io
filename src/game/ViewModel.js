@@ -101,6 +101,9 @@ export class WeaponViewModel {
     this.createModel('ravelin');
     this.createModel('mote');
     this.createModel('talon');
+    this.createModel('kestrel');
+    this.createModel('vanta');
+    this.createModel('drift');
     this.setWeapon('ravelin');
   }
 
@@ -123,6 +126,9 @@ export class WeaponViewModel {
     if (id === 'ravelin') this.buildRavelin(parts);
     if (id === 'mote') this.buildMote(parts);
     if (id === 'talon') this.buildTalon(parts);
+    if (id === 'kestrel') this.buildKestrel(parts);
+    if (id === 'vanta') this.buildVanta(parts);
+    if (id === 'drift') this.buildDrift(parts);
 
     group.add(parts.muzzle);
     if (parts.magazine) {
@@ -206,6 +212,116 @@ export class WeaponViewModel {
     parts.muzzle.position.set(0.02, 0.06, -2.16);
     this.addMuzzleFlash(g, parts, [0.02, 0.06, -2.18], 0.36);
     parts.aimPose = { position: new THREE.Vector3(-0.01, -0.27, -0.5), tilt: 0 };
+  }
+
+  buildKestrel(parts) {
+    const g = parts.group;
+    g.position.set(0.01, -0.02, 0.04);
+    addBox(g, [0.32, 0.18, 1.05], [0.02, 0.02, -0.5], this.materials.gunDark);
+    addBox(g, [0.3, 0.16, 1.08], [0.02, 0.16, -0.52], this.materials.gun);
+    addBox(g, [0.13, 0.035, 1.12], [0.02, 0.28, -0.52], this.materials.gunDark);
+    for (let i = 0; i < 10; i += 1) {
+      addBox(g, [0.15, 0.022, 0.04], [0.02, 0.315, -0.95 + i * 0.11], this.materials.gunDark);
+    }
+    addCylinder(g, 0.12, 0.52, [0.02, 0.44, -0.5], this.materials.gunDark, [Math.PI / 2, 0, Math.PI / 2], 22);
+    addCylinder(g, 0.075, 0.54, [0.02, 0.44, -0.5], this.materials.steel, [Math.PI / 2, 0, Math.PI / 2], 22);
+    addBox(g, [0.08, 0.08, 0.2], [0.02, 0.31, -0.5], this.materials.gunDark);
+    addBox(g, [0.16, 0.34, 0.18], [0.05, -0.28, -0.18], this.materials.grip, [-0.32, 0, 0]);
+    addBox(g, [0.22, 0.11, 0.2], [0.02, -0.15, -0.52], this.materials.gunDark);
+    parts.magazine = buildMagazine(this.materials.polymer, [0.78, 0.82, 0.86]);
+    parts.magazine.position.set(0.02, -0.38, -0.54);
+    parts.magazine.rotation.set(-0.06, 0, 0);
+    g.add(parts.magazine);
+    parts.magazineNew = buildMagazine(this.materials.polymer, [0.78, 0.82, 0.86]);
+    parts.magazineNew.position.set(0.02, -1.3, -0.54);
+    parts.magazineNew.rotation.set(-0.06, 0, 0);
+    parts.magazineNew.visible = false;
+    g.add(parts.magazineNew);
+    addBox(g, [0.18, 0.13, 0.56], [0.02, 0.04, 0.2], this.materials.polymer);
+    addBox(g, [0.16, 0.28, 0.07], [0.02, -0.04, 0.5], this.materials.polymer);
+    addBox(g, [0.22, 0.17, 0.72], [0.02, 0.06, -1.08], this.materials.gun);
+    addBox(g, [0.16, 0.04, 0.72], [0.02, 0.19, -1.08], this.materials.gunDark);
+    addCylinder(g, 0.035, 1.35, [0.02, 0.07, -1.78], this.materials.steel);
+    addCylinder(g, 0.06, 0.28, [0.02, 0.07, -2.55], this.materials.gunDark);
+    parts.bolt = addBox(g, [0.1, 0.04, 0.24], [0.18, 0.16, -0.42], this.materials.steel);
+    this.addHands(g, parts, {
+      right: [0.13, -0.22, -0.16],
+      rightAngle: [-0.55, -0.05, 0.55],
+      left: [-0.1, 0.08, -1.03],
+      leftAngle: [-0.95, 0.25, 0.7]
+    });
+    parts.muzzle.position.set(0.02, 0.07, -2.72);
+    this.addMuzzleFlash(g, parts, [0.02, 0.07, -2.74], 0.32);
+    parts.aimPose = { position: new THREE.Vector3(-0.01, -0.25, -0.5), tilt: 0 };
+  }
+
+  buildVanta(parts) {
+    const g = parts.group;
+    g.position.set(0.02, -0.02, 0.03);
+    addBox(g, [0.32, 0.2, 0.74], [0.02, 0.02, -0.38], this.materials.gunDark);
+    addBox(g, [0.3, 0.15, 0.66], [0.02, 0.16, -0.42], this.materials.gun);
+    addBox(g, [0.14, 0.03, 0.72], [0.02, 0.27, -0.42], this.materials.gunDark);
+    addBox(g, [0.16, 0.34, 0.18], [0.06, -0.26, -0.18], this.materials.grip, [-0.4, 0, 0]);
+    parts.magazine = buildMagazine(this.materials.polymer, [0.7, 0.48, 0.75]);
+    parts.magazine.position.set(0.0, -0.3, -0.5);
+    parts.magazine.rotation.set(-0.08, 0, 0);
+    g.add(parts.magazine);
+    parts.magazineNew = buildMagazine(this.materials.polymer, [0.7, 0.48, 0.75]);
+    parts.magazineNew.position.set(0.0, -1.1, -0.5);
+    parts.magazineNew.rotation.set(-0.08, 0, 0);
+    parts.magazineNew.visible = false;
+    g.add(parts.magazineNew);
+    addBox(g, [0.18, 0.13, 0.4], [0.02, 0.04, 0.08], this.materials.polymer);
+    addBox(g, [0.16, 0.22, 0.06], [0.02, -0.02, 0.3], this.materials.polymer);
+    addCylinder(g, 0.048, 1.18, [0.02, 0.08, -1.18], this.materials.steel);
+    addCylinder(g, 0.042, 1.1, [0.02, -0.03, -1.12], this.materials.gunDark);
+    addBox(g, [0.22, 0.14, 0.34], [0.02, -0.1, -0.88], this.materials.grip);
+    addCylinder(g, 0.08, 0.22, [0.02, 0.08, -1.9], this.materials.gunDark);
+    parts.bolt = addBox(g, [0.1, 0.04, 0.22], [0.18, 0.14, -0.42], this.materials.steel);
+    this.addHands(g, parts, {
+      right: [0.14, -0.2, -0.18],
+      rightAngle: [-0.55, -0.05, 0.55],
+      left: [-0.1, 0.04, -0.9],
+      leftAngle: [-0.9, 0.28, 0.74]
+    });
+    parts.muzzle.position.set(0.02, 0.08, -2.04);
+    this.addMuzzleFlash(g, parts, [0.02, 0.08, -2.06], 0.42);
+    parts.aimPose = { position: new THREE.Vector3(-0.01, -0.25, -0.48), tilt: 0 };
+  }
+
+  buildDrift(parts) {
+    const g = parts.group;
+    g.position.set(0.01, -0.03, 0.04);
+    addBox(g, [0.42, 0.22, 0.9], [0.02, 0.02, -0.43], this.materials.gunDark);
+    addBox(g, [0.38, 0.16, 0.74], [0.02, 0.18, -0.46], this.materials.gun);
+    addBox(g, [0.16, 0.035, 0.92], [0.02, 0.3, -0.52], this.materials.gunDark);
+    addBox(g, [0.18, 0.34, 0.18], [0.06, -0.28, -0.18], this.materials.grip, [-0.3, 0, 0]);
+    parts.magazine = buildMagazine(this.materials.polymer, [1.6, 0.72, 1.0]);
+    parts.magazine.position.set(-0.08, -0.36, -0.52);
+    parts.magazine.rotation.set(-0.04, 0, 0);
+    g.add(parts.magazine);
+    parts.magazineNew = buildMagazine(this.materials.polymer, [1.6, 0.72, 1.0]);
+    parts.magazineNew.position.set(-0.08, -1.25, -0.52);
+    parts.magazineNew.rotation.set(-0.04, 0, 0);
+    parts.magazineNew.visible = false;
+    g.add(parts.magazineNew);
+    addBox(g, [0.2, 0.14, 0.5], [0.02, 0.04, 0.15], this.materials.polymer);
+    addBox(g, [0.18, 0.28, 0.07], [0.02, -0.04, 0.42], this.materials.polymer);
+    addBox(g, [0.28, 0.18, 0.72], [0.02, 0.06, -1.04], this.materials.gun);
+    addBox(g, [0.2, 0.05, 0.72], [0.02, 0.21, -1.04], this.materials.gunDark);
+    addCylinder(g, 0.052, 1.15, [0.02, 0.08, -1.64], this.materials.steel);
+    addCylinder(g, 0.082, 0.28, [0.02, 0.08, -2.32], this.materials.gunDark);
+    addTaperedCylinder(g, 0.07, 0.13, 0.22, [0.02, 0.22, -1.34], this.materials.gunDark, [Math.PI / 2, 0, 0], 18);
+    parts.bolt = addBox(g, [0.12, 0.04, 0.26], [0.2, 0.15, -0.48], this.materials.steel);
+    this.addHands(g, parts, {
+      right: [0.14, -0.22, -0.18],
+      rightAngle: [-0.55, -0.05, 0.55],
+      left: [-0.12, 0.06, -1.0],
+      leftAngle: [-0.95, 0.25, 0.7]
+    });
+    parts.muzzle.position.set(0.02, 0.08, -2.48);
+    this.addMuzzleFlash(g, parts, [0.02, 0.08, -2.5], 0.38);
+    parts.aimPose = { position: new THREE.Vector3(-0.01, -0.24, -0.5), tilt: 0 };
   }
 
   buildMote(parts) {

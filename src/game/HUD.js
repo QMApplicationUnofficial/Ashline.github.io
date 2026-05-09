@@ -55,10 +55,34 @@ export class HUD {
         <div class="panel">
           <div class="brand">
             <h1>Ashline</h1>
-            <p>Original 3D tactical browser prototype with procedural dust, generated textures, and defender bots.</p>
+            <p>Dust, steel, and short sightlines. Choose a mode and breach the training district.</p>
           </div>
           <div class="menu-grid">
-            <div>
+            <div class="play-menu">
+              <div class="button-stack">
+                <button class="button primary play-button">Play</button>
+                <button class="button open-settings">Settings</button>
+                <button class="button show-controls">Controls</button>
+              </div>
+            </div>
+            <div class="mode-menu hidden">
+              <div class="loadouts mode-options">
+                <button type="button" class="loadout mode-card" data-mode="single">
+                  <h3>Single Player</h3>
+                  <p>Fight defender bots, plant the charge, and clear rounds.</p>
+                  <span class="status-chip">Ready</span>
+                </button>
+                <button type="button" class="loadout mode-card" data-mode="multi">
+                  <h3>Multiplayer</h3>
+                  <p>Prototype lobby mode. Starts the same tactical sandbox while network play is built.</p>
+                  <span class="status-chip">Prototype</span>
+                </button>
+              </div>
+              <div class="button-row">
+                <button class="button back-main">Back</button>
+              </div>
+            </div>
+            <div class="controls-menu hidden">
               <div class="key-list">
                 <div><span>WASD</span> Move</div>
                 <div><span>Mouse</span> Look</div>
@@ -72,17 +96,15 @@ export class HUD {
                 <div><span>Esc</span> Pause</div>
               </div>
               <div class="button-row">
-                <button class="button primary start">Start Round</button>
-                <button class="button open-settings">Settings</button>
+                <button class="button back-main">Back</button>
               </div>
             </div>
             <div>
               <span class="status-chip">GitHub Pages ready</span>
-              <p style="color: var(--ash-muted); line-height: 1.45; margin: 14px 0 0;">
-                Click start to lock the pointer and initialize generated audio.
-              </p>
+              <p class="menu-note">Pointer lock and generated audio start after you choose a mode.</p>
             </div>
           </div>
+          <div class="launch-strip"><span></span></div>
         </div>
       </section>
 
@@ -168,6 +190,10 @@ export class HUD {
   bindNodes() {
     return {
       main: this.root.querySelector('.menu'),
+      playMenu: this.root.querySelector('.play-menu'),
+      modeMenu: this.root.querySelector('.mode-menu'),
+      controlsMenu: this.root.querySelector('.controls-menu'),
+      menuNote: this.root.querySelector('.menu-note'),
       pause: this.root.querySelector('.pause'),
       buy: this.root.querySelector('.buy-menu'),
       settings: this.root.querySelector('.settings'),
@@ -188,13 +214,22 @@ export class HUD {
       killFeed: this.root.querySelector('.kill-feed'),
       hitMarker: this.root.querySelector('.hit-marker'),
       damage: this.root.querySelector('.damage-vignette'),
-      loadouts: this.root.querySelector('.loadouts')
+      loadouts: this.root.querySelector('.buy-menu .loadouts')
     };
   }
 
   bindEvents() {
-    this.root.querySelectorAll('.start').forEach((button) => {
-      button.addEventListener('click', () => this.callbacks.onStart?.());
+    this.root.querySelectorAll('.play-button').forEach((button) => {
+      button.addEventListener('click', () => this.showModes());
+    });
+    this.root.querySelectorAll('.mode-card').forEach((card) => {
+      card.addEventListener('click', () => this.callbacks.onStart?.(card.dataset.mode));
+    });
+    this.root.querySelectorAll('.show-controls').forEach((button) => {
+      button.addEventListener('click', () => this.showControls());
+    });
+    this.root.querySelectorAll('.back-main').forEach((button) => {
+      button.addEventListener('click', () => this.showMainPanel());
     });
     this.root.querySelectorAll('.resume').forEach((button) => {
       button.addEventListener('click', () => this.callbacks.onResume?.());
@@ -314,6 +349,42 @@ export class HUD {
 
   showMain(visible) {
     this.nodes.main.classList.toggle('visible', visible);
+    if (visible) {
+      this.nodes.main.classList.remove('launching');
+      this.showMainPanel();
+    }
+  }
+
+  showMainPanel() {
+    this.nodes.playMenu.classList.remove('hidden');
+    this.nodes.modeMenu.classList.add('hidden');
+    this.nodes.controlsMenu.classList.add('hidden');
+    this.nodes.menuNote.textContent = 'Pointer lock and generated audio start after you choose a mode.';
+  }
+
+  showModes() {
+    this.nodes.playMenu.classList.add('hidden');
+    this.nodes.modeMenu.classList.remove('hidden');
+    this.nodes.controlsMenu.classList.add('hidden');
+    this.nodes.menuNote.textContent = 'Single Player is ready. Multiplayer is a prototype entry point for now.';
+  }
+
+  showControls() {
+    this.nodes.playMenu.classList.add('hidden');
+    this.nodes.modeMenu.classList.add('hidden');
+    this.nodes.controlsMenu.classList.remove('hidden');
+    this.nodes.menuNote.textContent = 'Controls are kept close so the first round starts fast.';
+  }
+
+  playLaunch(mode) {
+    this.nodes.menuNote.textContent = mode === 'multi' ? 'Opening multiplayer prototype...' : 'Entering single player...';
+    this.nodes.main.classList.add('launching');
+    return new Promise((resolve) => {
+      window.setTimeout(() => {
+        this.showMain(false);
+        resolve();
+      }, 620);
+    });
   }
 
   showPause(visible) {

@@ -363,6 +363,19 @@ canvas.webgl {
   display: grid;
 }
 
+.menu .panel {
+  transition:
+    opacity 260ms ease,
+    transform 620ms cubic-bezier(0.2, 0.78, 0.18, 1),
+    filter 620ms ease;
+}
+
+.menu.launching .panel {
+  opacity: 0;
+  transform: translateY(22px) scale(0.96);
+  filter: blur(8px);
+}
+
 .panel {
   width: min(760px, calc(100vw - 32px));
   border: 1px solid var(--ash-line);
@@ -424,6 +437,17 @@ canvas.webgl {
   margin-top: 18px;
 }
 
+.button-stack {
+  display: grid;
+  gap: 10px;
+  max-width: 260px;
+}
+
+.button-stack .button {
+  justify-content: center;
+  min-height: 48px;
+}
+
 .button,
 .icon-button {
   min-height: 42px;
@@ -464,17 +488,29 @@ canvas.webgl {
   gap: 12px;
 }
 
+.mode-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .loadout {
   border: 1px solid var(--ash-line);
   border-radius: 8px;
   padding: 14px;
+  color: var(--ash-text);
+  text-align: left;
   background: rgba(255, 255, 255, 0.055);
   cursor: pointer;
+  appearance: none;
 }
 
 .loadout.active {
   border-color: rgba(240, 196, 108, 0.82);
   background: rgba(231, 168, 68, 0.16);
+}
+
+.mode-card:hover {
+  border-color: rgba(240, 196, 108, 0.72);
+  background: rgba(231, 168, 68, 0.12);
 }
 
 .loadout h3 {
@@ -526,6 +562,38 @@ canvas.webgl {
   border-radius: 999px;
   color: var(--ash-muted);
   font-size: 12px;
+}
+
+.menu-note {
+  color: var(--ash-muted);
+  line-height: 1.45;
+  margin: 14px 0 0;
+}
+
+.launch-strip {
+  height: 2px;
+  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.launch-strip span {
+  display: block;
+  width: 38%;
+  height: 100%;
+  transform: translateX(-110%);
+  background: linear-gradient(90deg, transparent, #e7a844, transparent);
+}
+
+.menu.launching .launch-strip span {
+  animation: launchSweep 620ms ease forwards;
+}
+
+@keyframes launchSweep {
+  to {
+    transform: translateX(270%);
+  }
 }
 
 .hidden {

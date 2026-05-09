@@ -55,13 +55,15 @@ export class Game {
       onKill: (bot, weapon) => this.hud?.addKill('You', bot.name, weapon.name)
     });
     this.hud = new HUD(root, this.map, this.settings, {
-      onStart: () => this.begin(),
+      onStart: (mode) => this.begin(mode),
       onResume: () => this.resume(),
       onRestart: () => this.resetRound(),
       onWeaponSelect: (index) => this.weapons.select(index)
     });
 
     this.state = 'menu';
+    this.mode = 'single';
+    this.escapeCooldown = 0;
     this.clock = new THREE.Clock();
     this.lastFrame = 0;
     this.settings.subscribe((values) => {
@@ -72,6 +74,8 @@ export class Game {
     this.renderer3D.renderer.domElement.addEventListener('click', () => {
       if (this.state === 'playing') this.input.requestPointerLock();
     });
+    this.handlePointerLockChange = this.handlePointerLockChange.bind(this);
+    document.addEventListener('pointerlockchange', this.handlePointerLockChange);
   }
 
   createBots() {
@@ -86,9 +90,10 @@ export class Game {
     this.loop();
   }
 
-  async begin() {
+  async begin(mode = 'single') {
     await this.audio.resume();
-    this.hud.showMain(false);
+    this.mode = mode;
+    await this.hud.playLaunch(mode);
     this.hud.showPause(false);
     this.hud.showSettings(false);
     this.hud.showBuy(false);
@@ -112,6 +117,13 @@ export class Game {
     this.hud.showPause(true);
   }
 
+  handlePointerLockChange() {
+    if (this.state === 'playing' && document.pointerLockElement !== this.renderer3D.renderer.domElement) {
+      this.escapeCooldown = 0.25;
+      this.pause();
+    }
+  }
+
   resetRound() {
     this.player.reset(this.map.attackerSpawn);
     this.weapons.resetAmmo();
@@ -126,7 +138,8 @@ export class Game {
   }
 
   update(dt) {
-    if (this.input.consume('Escape')) {
+    this.escapeCooldown = Math.max(0, this.escapeCooldown - dt);
+    if (this.input.consume('Escape') && this.escapeCooldown <= 0) {
       if (this.state === 'playing') this.pause();
       else if (this.state === 'paused') this.resume();
     }
